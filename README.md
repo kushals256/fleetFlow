@@ -1,4 +1,3 @@
-
 ## 📖 Overview
 
 **FleetFlow** modernizes mid-market logistics operations. Traditional fleet companies suffer from fragmented operations—vehicles are tracked on a whiteboard, drivers are scheduled via disparate spreadsheets, and fuel logs exist strictly on paper receipts. 
@@ -163,19 +162,19 @@ All endpoints are prefixed with `/api` and require an `Authorization: Bearer <to
 
 This project was built collaboratively during the hackathon. Here is our team breakdown:
 
-- **Kushal Sacharya** 
+- **Kushal S** 
   - **Role:** Full-Stack Developer & Architect 
   - **Contributions:** Led the overall system architecture, implemented the backend SQLite schema, developed the automated "Smart Match" dispatch algorithm, and built the core React dashboard components.
 
-- **[Team Member 2 Name]** 
+- **Neal** 
   - **Role:** Frontend & UI/UX Designer
   - **Contributions:** Designed the glassmorphism UI system, developed the Recharts financial analytics views, and implemented the generalized CSS styles and animations.
 
-- **[Team Member 3 Name]** 
+- **Jayanth** 
   - **Role:** Backend Developer
   - **Contributions:** Implemented the JWT Authentication, Role-Based Access Control (RBAC) middleware, and the REST endpoints for Vehicle and Driver registries.
 
-- **[Team Member 4 Name]** 
+- **Pushkar** 
   - **Role:** Product Manager & Presentation
   - **Contributions:** Directed feature prioritization, wrote the project documentation and Voiceover scripts, and conducted QA testing across all dispatch workflows.
 
