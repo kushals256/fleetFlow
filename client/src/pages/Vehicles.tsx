@@ -98,6 +98,13 @@ export function Vehicles() {
                     onChange={e => setNewVehicle({ ...newVehicle, odometer_km: parseInt(e.target.value) || 0 })}
                 />
 
+                <FormInput
+                    label="Acquisition Cost (₹)"
+                    type="number"
+                    value={newVehicle.acquisition_cost || ''}
+                    onChange={e => setNewVehicle({ ...newVehicle, acquisition_cost: parseInt(e.target.value) || 0 })}
+                />
+
                 <div style={{ marginBottom: '1rem' }}>
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Type</label>
                     <select

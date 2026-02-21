@@ -32,7 +32,14 @@ export function Analytics() {
 
         // Formula from Spec: (Revenue - (Maintenance + Fuel)) / Acquisition Cost
         const netProfit = vRevenue - (vMaintCost + vFuelCost);
-        const roi = v.acquisition_cost > 0 ? (netProfit / v.acquisition_cost) * 100 : 0;
+
+        // If acquisition cost is 0, we can't calculate a normal percentage.
+        // If there's profit but no recorded cost, show the raw profit margin as the visualization.
+        const effectiveAcquisitionCost = v.acquisition_cost > 0 ? v.acquisition_cost : 1;
+        let roi = (netProfit / effectiveAcquisitionCost) * 100;
+
+        if (v.acquisition_cost === 0 && netProfit > 0) roi = netProfit * 100;
+        if (v.acquisition_cost === 0 && netProfit === 0) roi = 0;
 
         return {
             name: v.license_plate,
