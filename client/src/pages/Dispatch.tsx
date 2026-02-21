@@ -240,7 +240,7 @@ export function Dispatch() {
                 />
 
                 <FormInput
-                    label="Estimated Fuel Cost (₹)"
+                    label="Expected Revenue (₹)"
                     type="number"
                     value={newTrip.expected_revenue || ''}
                     onChange={e => setNewTrip({ ...newTrip, expected_revenue: parseInt(e.target.value) })}
