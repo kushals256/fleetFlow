@@ -8,6 +8,7 @@ import { Vehicles } from '../pages/Vehicles';
 import { Dispatch } from '../pages/Dispatch';
 import { Logs } from '../pages/Logs';
 import { Analytics } from '../pages/Analytics';
+import { Drivers } from '../pages/Drivers';
 
 export function Layout() {
     const location = useLocation();
@@ -43,10 +44,10 @@ export function Layout() {
                         <span>Analytics</span>
                     </Link>
 
-                    <a href="#" className="nav-item">
+                    <Link to="/drivers" className={`nav-item ${location.pathname === '/drivers' ? 'active' : ''}`}>
                         <Users size={20} />
                         <span>Drivers</span>
-                    </a>
+                    </Link>
                     <a href="#" className="nav-item">
                         <Settings size={20} />
                         <span>Settings</span>
@@ -77,6 +78,7 @@ export function Layout() {
                         <Route path="/vehicles" element={<Vehicles />} />
                         <Route path="/logs" element={<Logs />} />
                         <Route path="/analytics" element={<Analytics />} />
+                        <Route path="/drivers" element={<Drivers />} />
                         {/* Future placeholders */}
                         <Route path="*" element={<h2>🚧 Under Construction</h2>} />
                     </Routes>
