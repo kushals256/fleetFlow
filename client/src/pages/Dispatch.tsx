@@ -7,8 +7,14 @@ import { Modal } from '../components/Modal';
 import { AlertCircle, Wand2 } from 'lucide-react';
 
 export function Dispatch() {
-    const { vehicles, drivers, trips, dispatchTrip, addToast } = useFleetStore();
+    const { vehicles, drivers, trips, dispatchTrip, completeTrip, addToast } = useFleetStore();
     const [isModalOpen, setModalOpen] = useState(false);
+
+    // Complete Trip state
+    const [isCompleteModalOpen, setCompleteModalOpen] = useState(false);
+    const [selectedCompleteTrip, setSelectedCompleteTrip] = useState<Trip | null>(null);
+    const [newOdometer, setNewOdometer] = useState<number | ''>('');
+
     const [errorText, setErrorText] = useState('');
 
     const [newTrip, setNewTrip] = useState<Partial<Trip>>({
@@ -95,6 +101,20 @@ export function Dispatch() {
         setNewTrip({ cargo_weight: 0, expected_revenue: 0, origin: '', destination: '' });
     };
 
+    const handleComplete = async () => {
+        if (!selectedCompleteTrip) return;
+        if (newOdometer === '' || newOdometer < 0) {
+            setErrorText('Please enter a valid ending odometer reading.');
+            return;
+        }
+
+        setErrorText('');
+        await completeTrip(selectedCompleteTrip.id, Number(newOdometer));
+        setCompleteModalOpen(false);
+        setSelectedCompleteTrip(null);
+        setNewOdometer('');
+    };
+
     const columns = [
         { key: 'id', header: 'Trip ID' },
         { key: 'vehicle_id', header: 'Vehicle ID' },
@@ -103,6 +123,23 @@ export function Dispatch() {
         { key: 'origin', header: 'Origin' },
         { key: 'destination', header: 'Destination' },
         { key: 'status', header: 'Status', render: (t: Trip) => <StatusPill status={t.status} /> },
+        {
+            key: 'actions',
+            header: '',
+            render: (t: Trip) => t.status === 'DISPATCHED' ? (
+                <button
+                    className="btn-secondary"
+                    style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
+                    onClick={() => {
+                        setSelectedCompleteTrip(t);
+                        setCompleteModalOpen(true);
+                        setErrorText('');
+                    }}
+                >
+                    Complete
+                </button>
+            ) : null
+        }
     ];
 
     return (
@@ -207,6 +244,46 @@ export function Dispatch() {
                     type="number"
                     value={newTrip.expected_revenue || ''}
                     onChange={e => setNewTrip({ ...newTrip, expected_revenue: parseInt(e.target.value) })}
+                />
+            </Modal>
+
+            <Modal
+                isOpen={isCompleteModalOpen}
+                onClose={() => {
+                    setCompleteModalOpen(false);
+                    setSelectedCompleteTrip(null);
+                    setNewOdometer('');
+                    setErrorText('');
+                }}
+                title={`Mark Trip ${selectedCompleteTrip?.id.substring(0, 8)}... as Complete`}
+                footer={
+                    <>
+                        <button className="btn-secondary" onClick={() => {
+                            setCompleteModalOpen(false);
+                            setNewOdometer('');
+                            setErrorText('');
+                        }}>Cancel</button>
+                        <button className="btn-primary" onClick={handleComplete}>Confirm Completion</button>
+                    </>
+                }
+            >
+                {errorText && (
+                    <div style={{ background: 'var(--danger-bg)', color: 'var(--danger)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <AlertCircle size={18} />
+                        <span style={{ fontSize: '0.875rem' }}>{errorText}</span>
+                    </div>
+                )}
+
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+                    Please enter the vehicle's final odometer reading upon returning to the depot.
+                    This will automatically mark the vehicle and driver as AVAILABLE and record the trip as COMPLETED.
+                </p>
+
+                <FormInput
+                    label="Final Odometer Reading (km)"
+                    type="number"
+                    value={newOdometer || ''}
+                    onChange={e => setNewOdometer(Math.max(0, parseInt(e.target.value)))}
                 />
             </Modal>
         </div>

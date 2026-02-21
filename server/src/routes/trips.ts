@@ -80,13 +80,21 @@ router.post('/:id/complete', authenticateToken, requireRole(['MANAGER', 'DISPATC
         db.get('SELECT * FROM trips WHERE id = ? AND status = "DISPATCHED"', [tripId], (err, trip: any) => {
             if (err || !trip) return rollback(res, 'Trip not found or not in DISPATCHED state');
 
-            db.run('UPDATE trips SET status = "COMPLETED" WHERE id = ?', [tripId]);
-            db.run('UPDATE vehicles SET status = "AVAILABLE", odometer_km = ? WHERE id = ?', [new_odometer, trip.vehicle_id]);
-            db.run('UPDATE drivers SET status = "AVAILABLE" WHERE id = ?', [trip.driver_id]);
+            db.run('UPDATE trips SET status = "COMPLETED" WHERE id = ?', [tripId], (err) => {
+                if (err) return rollback(res, 'Failed to update trip status');
 
-            db.run('COMMIT', (err) => {
-                if (err) return rollback(res, 'Failed to complete trip');
-                res.json({ message: 'Trip completed successfully' });
+                db.run('UPDATE vehicles SET status = "AVAILABLE", odometer_km = ? WHERE id = ?', [new_odometer, trip.vehicle_id], (err) => {
+                    if (err) return rollback(res, 'Failed to update vehicle status');
+
+                    db.run('UPDATE drivers SET status = "AVAILABLE" WHERE id = ?', [trip.driver_id], (err) => {
+                        if (err) return rollback(res, 'Failed to update driver status');
+
+                        db.run('COMMIT', (err) => {
+                            if (err) return rollback(res, 'Failed to complete trip');
+                            res.json({ message: 'Trip completed successfully' });
+                        });
+                    });
+                });
             });
         });
     });
