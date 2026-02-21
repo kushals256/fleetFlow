@@ -116,9 +116,27 @@ export function Dispatch() {
     };
 
     const columns = [
-        { key: 'id', header: 'Trip ID' },
-        { key: 'vehicle_id', header: 'Vehicle ID' },
-        { key: 'driver_id', header: 'Driver ID' },
+        {
+            key: 'id',
+            header: 'Trip ID',
+            render: (t: Trip) => <span style={{ fontFamily: 'monospace', color: 'var(--text-secondary)' }}>{t.id.substring(0, 8)}...</span>
+        },
+        {
+            key: 'vehicle_id',
+            header: 'Vehicle',
+            render: (t: Trip) => {
+                const v = vehicles.find(v => v.id === t.vehicle_id);
+                return v ? `${v.model} (${v.license_plate})` : <span style={{ fontFamily: 'monospace' }}>{t.vehicle_id.substring(0, 8)}...</span>;
+            }
+        },
+        {
+            key: 'driver_id',
+            header: 'Driver',
+            render: (t: Trip) => {
+                const d = drivers.find(d => d.id === t.driver_id);
+                return d ? d.name : <span style={{ fontFamily: 'monospace' }}>{t.driver_id.substring(0, 8)}...</span>;
+            }
+        },
         { key: 'cargo_weight', header: 'Cargo (kg)' },
         { key: 'origin', header: 'Origin' },
         { key: 'destination', header: 'Destination' },
