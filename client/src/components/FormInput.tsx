@@ -1,5 +1,5 @@
 import { type InputHTMLAttributes, type ReactNode } from 'react';
-
+// UI of login and register
 interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
     label: string;
     error?: string;
