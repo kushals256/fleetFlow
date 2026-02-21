@@ -1,62 +1,189 @@
-# FleetFlow 🚚
 
-FleetFlow is a complete, end-to-end Enterprise Resource Planning (ERP) tool designed specifically for mid-market logistics companies. It bridges the gap between disconnected systems by providing a single, cohesive Command Center to manage vehicles, drivers, dispatches, and financial analytics.
+## 📖 Overview
 
-Built with a stunning, highly-responsive glassmorphism UI, FleetFlow makes complex fleet operations seamless, efficient, and beautiful.
+**FleetFlow** modernizes mid-market logistics operations. Traditional fleet companies suffer from fragmented operations—vehicles are tracked on a whiteboard, drivers are scheduled via disparate spreadsheets, and fuel logs exist strictly on paper receipts. 
 
-## ✨ Key Features
+FleetFlow consolidates every moving part of a logistics operation into a single, cohesive, web-based **Command Center**. Utilizing a beautiful, modern *glassmorphism* UI, FleetFlow allows managers to gain real-time visibility into their fleet operations and actively scale their business using intelligent automation tools.
 
-- **Command Center Dashboard:** Get a real-time overview of your fleet's operations, including active vehicles, vehicles in maintenance, utilization rates, and pending cargo.
-- **Asset & Personnel Management:** Maintain detailed registries of your vehicles (capacity, odometer, status) and drivers (license categories, safety scores).
-- **Smart Match Dispatching:** Our automated "Smart Match" algorithm eliminates manual cross-referencing. Just input the cargo weight, and FleetFlow automatically assigns the *smallest capable vehicle* alongside the *safest qualified driver* to maximize fuel efficiency and compliance.
-- **Maintenance & Fuel Logs:** Track all running costs directly in Rupees (₹). Dispatchers and drivers can easily log fuel fill-ups or mechanical repairs, feeding directly into the system's financial engine.
-- **Operational Analytics:** Visualize your business health with beautiful charts mapping revenue against operating costs, calculating Return on Investment (ROI) per vehicle, and displaying detailed monthly breakdowns.
-- **Role-Based Access Control (RBAC):** Secure JWT authentication with specialized roles (Manager, Dispatcher, Safety Officer, Finance).
+---
 
-## 🚀 Tech Stack
+## ✨ Core Features
 
-### Frontend
+### 1. 🎛️ Live Command Center Dashboard
+- **Real-Time KPIs:** Instantly view active vehicles, assets sent to maintenance (In Shop), overall fleet utilization percentage, and pending cargo loads.
+- **Glassmorphism UI:** Built with premium, highly responsive user interface principles utilizing soft shadows, translucent panels, and smooth micro-animations.
+
+### 2. 🤖 "Smart Match" Dispatch Algorithm
+- **Automated Routing:** No more manual cross-referencing. Input the required cargo weight, and FleetFlow's exact-match algorithm will instantly query the database.
+- **Efficiency First:** The system automatically selects the *smallest capable vehicle* to minimize overhead fuel costs.
+- **Safety Compliant:** The system pairs that vehicle exclusively with the *highest-rated*, safely-licensed driver available for that specific vehicle class.
+- **Atomic Transactions:** Uses secure SQLite transactions to simultaneously ensure vehicles and drivers are locked into the dispatch without race conditions.
+
+### 3. 👥 Comprehensive Registry & HR Tracking
+- **Vehicle Fleet Registry:** Track vehicle models, classes (e.g., Heavy Truck, Van), maximum payload capacities (kg), and live odometer readings.
+- **Driver Management:** Track driver names, specialized license qualifications, unique safety scores, and employment statuses.
+
+### 4. 📈 Operational & Financial Analytics
+- **Live ROI Tracking:** An integrated analytics engine aggregates all expected revenues against real-world fuel and maintenance costs to calculate net profits in Rupees (₹).
+- **Data Visualization:** Interactive bar charts built with Recharts clearly visualize operational trends over custom periods.
+
+### 5. 🔒 Enterprise-Grade Security
+- **JWT Authentication:** Stateful token-based access with localized storage persistence.
+- **Role-Based Access Control (RBAC):** Customized access for specific roles — *Managers*, *Dispatchers*, *Safety Officers*, and *Finance Analysts*.
+
+---
+
+## �️ Technology Stack
+
+FleetFlow operates on a modern, robust, TypeScript-first architecture.
+
+### 💻 Frontend Client
 - **Framework:** React 18 + Vite
 - **Language:** TypeScript
-- **State Management:** Zustand
-- **Routing:** React Router DOM
-- **Styling:** Vanilla CSS variables with custom animations and a premium glassmorphism design system.
-- **Icons & Visualization:** Lucide-React & Recharts.
+- **State Management:** Zustand (Global store with localized Auth persistence)
+- **Routing:** React Router v6
+- **Styling/UI:** Custom Vanilla CSS (Design-system tokens, variables, keyframe animations)
+- **Icons & Charts:** Lucide-React & Recharts
 
-### Backend
-- **Framework:** Node.js with Express
+### ⚙️ Backend Server
+- **Runtime:** Node.js + Express.js
 - **Language:** TypeScript
-- **Database:** SQLite3 (Serverless, zero-configuration database)
-- **Authentication:** JSON Web Tokens (JWT) & bcrypt
+- **Database:** SQLite3 (Serverless, local file-based database configured for high-concurrency transactions)
+- **Security:** `bcrypt` (Password hashing) & `jsonwebtoken` (Auth)
+- **Architecture:** Modular REST API
 
-## 🛠️ Local Setup Instructions
+---
 
-Follow these steps to run FleetFlow on your local machine.
+## 🗂️ Project Structure
 
-### 1. Start the Backend Server
-Open a terminal and navigate to the backend directory:
+```text
+fleetFlow/
+├── client/                     # React Frontend
+│   ├── src/
+│   │   ├── components/         # Reusable UI (FormInput, Layout, Modal, StatusPill, Toast)
+│   │   ├── pages/              # Primary Routes (Analytics, Dashboard, Dispatch, Login, etc.)
+│   │   ├── store/              # Zustand Global State (fleetStore.ts)
+│   │   ├── App.tsx             # Root Component & Router
+│   │   └── index.css           # Global Design System (Glassmorphism & Vars)
+│   └── package.json    
+├── server/                     # Express Backend
+│   ├── src/
+│   │   ├── db/                 # SQLite configuration and DB initialization
+│   │   ├── middleware/         # Security (auth.ts & RBAC)
+│   │   ├── routes/             # REST Endpoints (auth, drivers, logs, trips, vehicles)
+│   │   ├── server.ts           # Express Application Entry
+│   │   └── setup.ts            # Bootstrapper for seeding default Dev data
+│   ├── app.db                  # Local SQLite Database file
+│   └── package.json
+└── README.md
+```
+
+---
+
+## 🚀 Local Installation & Setup
+
+You will need two separate terminal windows to run the frontend and backend concurrently.
+
+### 1. Initialize the Backend (Terminal 1)
 ```bash
-cd fleetFlow/server
+# Navigate to the server directory
+cd server
+
+# Install dependencies
 npm install
+
+# Start the development server (Defaults to Port 3000)
 npm run dev
 ```
-*The server will start on `http://localhost:3000` and automatically initialize the SQLite database with seed data.*
+*(Note: Upon its first run, `setup.ts` will automatically build the `app.db` SQLite database and seed it with dummy vehicles, drivers, and the admin account).*
 
-### 2. Start the Frontend Application
-Open a new, separate terminal and navigate to the frontend directory:
+### 2. Initialize the Frontend (Terminal 2)
 ```bash
-cd fleetFlow/client
+# Navigate to the client directory
+cd client
+
+# Install dependencies
 npm install
+
+# Start the Vite development build
 npm run dev
 ```
-*Vite will start the client on `http://localhost:5173`.*
+*(Vite will serve the client at `http://localhost:5173`)*
 
-### 3. Login
-Open your browser and navigate to `http://localhost:5173`. 
-You can register a new account or use the default seeded Manager account:
+### 3. Accessing the System
+Navigate to `http://localhost:5173` in your browser. 
+Use the pre-seeded admin account to explore the dashboard:
 - **Email:** `admin@fleetflow.com`
 - **Password:** `password123`
 
-## 💡 About The Project
+*(You can also use the 'Register here' link on the login page to provision a new user under a different Operational Role.)*
 
-FleetFlow was created to solve a major problem in logistics: the reliance on multiple, disconnected tools like separate spreadsheets for drivers and disparate tracking apps for vehicles. By centralizing operations and automating logistics decisions with intelligent algorithms (like *Smart Match*), FleetFlow acts as an active partner in scaling logistics businesses.
+---
+
+## 📡 API Reference Schema
+
+All endpoints are prefixed with `/api` and require an `Authorization: Bearer <token>` header (except Auth routes).
+
+### Authentication (`/api/auth`)
+- `POST /login`: Authenticates user and returns JWT.
+- `POST /register`: Creates a new user with encrypted password.
+- `GET /me`: Returns details of the currently authenticated user.
+
+### Vehicles (`/api/vehicles`)
+- `GET /`: Returns the fleet registry.
+- `POST /`: Adds a new vehicle to the registry.
+- `PATCH /:id/status`: Updates a specific vehicle's operational status.
+
+### Drivers (`/api/drivers`)
+- `GET /`: Returns the personnel registry.
+- `POST /`: Registers a new driver.
+
+### Trips & Dispatch (`/api/trips`)
+- `GET /`: Lists all historical and active dispatches.
+- `POST /dispatch`: **(Transaction)** Initiates the Smart Match dispatch—updates trip, driver, and vehicle tables atomically.
+- `POST /:id/complete`: Marks a trip as done and releases assigned assets back to `AVAILABLE`.
+
+### Maintenance & Logs (`/api/logs`)
+- `GET /`: Fetches all fuel and repair logs.
+- `POST /`: Submits a new financial log against a specific vehicle.
+
+### Analytics (`/api/analytics`)
+- `GET /`: Aggregates the raw JSON payload summarizing fleet business performance based on Dispatches and Logs.
+
+---
+
+## 🔮 Future Roadmap Themes
+1. **Live GPS Tracking:** Integrating Mapbox or Google Maps APIs to visually plot `ON_TRIP` vehicles in real-time.
+2. **Predictive Maintenance ML:** Implementing a lightweight regression model to warn managers *before* a vehicle breaks down based on the frequency of `IN_SHOP` log submissions.
+3. **Automated Client Billing:** Generating PDF invoices for completed trips instantly.
+
+---
+
+## 👥 Team & Contributions
+
+This project was built collaboratively during the hackathon. Here is our team breakdown:
+
+- **Kushal Sacharya** 
+  - **Role:** Full-Stack Developer & Architect 
+  - **Contributions:** Led the overall system architecture, implemented the backend SQLite schema, developed the automated "Smart Match" dispatch algorithm, and built the core React dashboard components.
+
+- **[Team Member 2 Name]** 
+  - **Role:** Frontend & UI/UX Designer
+  - **Contributions:** Designed the glassmorphism UI system, developed the Recharts financial analytics views, and implemented the generalized CSS styles and animations.
+
+- **[Team Member 3 Name]** 
+  - **Role:** Backend Developer
+  - **Contributions:** Implemented the JWT Authentication, Role-Based Access Control (RBAC) middleware, and the REST endpoints for Vehicle and Driver registries.
+
+- **[Team Member 4 Name]** 
+  - **Role:** Product Manager & Presentation
+  - **Contributions:** Directed feature prioritization, wrote the project documentation and Voiceover scripts, and conducted QA testing across all dispatch workflows.
+
+*(Note: Please replace the placeholder names and roles above with your actual team members before submission!)*
+
+---
+
+## 🤝 Contribution & License
+
+Created exclusively as an ERP Logistics software submission. 
+Codebase is open-source under the **MIT License**. Standard contribution rules apply: fork, branch, test, and submit a PR!
