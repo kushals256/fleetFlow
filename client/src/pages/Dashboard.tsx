@@ -1,3 +1,4 @@
+// Home page and analytics
 import { useFleetStore } from '../store/fleetStore';
 import { Truck, AlertCircle, CheckCircle, Package } from 'lucide-react';
 

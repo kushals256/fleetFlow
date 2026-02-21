@@ -1,3 +1,5 @@
+// Vehicles managment page
+
 import { useState } from "react";
 import { useFleetStore, type Vehicle } from '../store/fleetStore';
 import { DataTable } from '../components/DataTable';
