@@ -1,9 +1,8 @@
-// Home page and analytics
 import { useFleetStore } from '../store/fleetStore';
-import { Truck, AlertCircle, CheckCircle, Package } from 'lucide-react';
+import { Truck, AlertCircle, CheckCircle, Package, MapPin, FileText } from 'lucide-react';
 
 export function Dashboard() {
-    const { vehicles, trips } = useFleetStore();
+    const { vehicles, trips, logs } = useFleetStore();
 
     // Calculate KPIs
     const activeFleetCount = vehicles.filter(v => v.status === 'ON_TRIP').length;
@@ -17,6 +16,33 @@ export function Dashboard() {
 
     // Pending cargo is simply trips that haven't 'COMPLETED' yet in this mock
     const pendingCargoCount = trips.filter(t => t.status === 'DISPATCHED' || t.status === 'DRAFT').length;
+
+    // Combine recent trips and logs into an activity feed
+    const activities: any[] = [];
+
+    [...trips].reverse().slice(0, 5).forEach(t => {
+        activities.push({
+            id: t.id,
+            type: 'trip',
+            icon: <MapPin size={18} />,
+            color: 'var(--accent-primary)',
+            title: `Trip Dispatched: ${t.origin} to ${t.destination}`,
+            subtitle: `Assigned to Vehicle ${t.vehicle_id.substring(0, 6)}`,
+            timestamp: 'Recent'
+        });
+    });
+
+    [...logs].reverse().slice(0, 5).forEach(l => {
+        activities.push({
+            id: l.id,
+            type: 'log',
+            icon: l.log_type === 'FUEL' ? <AlertCircle size={18} /> : <FileText size={18} />,
+            color: l.log_type === 'FUEL' ? 'var(--warning)' : 'var(--danger)',
+            title: `${l.log_type} Log Updated`,
+            subtitle: `Cost: ₹${l.cost} for Vehicle ${l.vehicle_id.substring(0, 6)}`,
+            timestamp: new Date(l.date_logged).toLocaleDateString()
+        });
+    });
 
     return (
         <div className="animate-fade-in">
@@ -32,7 +58,7 @@ export function Dashboard() {
                 gap: '1.5rem',
                 marginBottom: '2rem'
             }}>
-
+                {/* ... existing cards ... */}
                 <div className="glass-panel" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                     <div style={{ padding: '1rem', background: 'var(--info-bg)', borderRadius: '12px', color: 'var(--info)' }}>
                         <Truck size={32} />
@@ -72,12 +98,28 @@ export function Dashboard() {
                         <h3 style={{ fontSize: '2rem', margin: 0 }}>{pendingCargoCount}</h3>
                     </div>
                 </div>
-
             </div>
 
             <div className="glass-panel">
                 <h3>Recent Activity</h3>
-                <p style={{ color: 'var(--text-muted)' }}>Live feed placeholder...</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1.5rem' }}>
+                    {activities.length > 0 ? activities.slice(0, 5).map((activity, idx) => (
+                        <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingBottom: '1rem', borderBottom: idx !== activities.slice(0, 5).length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                            <div style={{ padding: '0.75rem', background: 'var(--app-bg)', borderRadius: '12px', color: activity.color }}>
+                                {activity.icon}
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <p style={{ fontWeight: 600, margin: 0, fontSize: '0.9rem' }}>{activity.title}</p>
+                                <p style={{ color: 'var(--text-secondary)', margin: '0.25rem 0 0 0', fontSize: '0.8rem' }}>{activity.subtitle}</p>
+                            </div>
+                            <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
+                                {activity.timestamp}
+                            </div>
+                        </div>
+                    )) : (
+                        <p style={{ color: 'var(--text-muted)' }}>No recent activity found. Start tracking trips and logs!</p>
+                    )}
+                </div>
             </div>
         </div>
     );
