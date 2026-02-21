@@ -13,6 +13,7 @@ export function Dispatch() {
 
     const [newTrip, setNewTrip] = useState<Partial<Trip>>({
         cargo_weight: 0,
+        expected_revenue: 0,
         origin: '',
         destination: ''
     });
@@ -26,9 +27,9 @@ export function Dispatch() {
 
     const handleDispatch = () => {
         setErrorText('');
-        const { vehicle_id, driver_id, cargo_weight, origin, destination } = newTrip;
+        const { vehicle_id, driver_id, cargo_weight, expected_revenue, origin, destination } = newTrip;
 
-        if (!vehicle_id || !driver_id || !cargo_weight || !origin || !destination) {
+        if (!vehicle_id || !driver_id || !cargo_weight || expected_revenue === undefined || !origin || !destination) {
             setErrorText('All fields are required.');
             return;
         }
@@ -53,7 +54,7 @@ export function Dispatch() {
         // Success
         dispatchTrip(newTrip as Omit<Trip, 'id' | 'status'>);
         setModalOpen(false);
-        setNewTrip({ cargo_weight: 0, origin: '', destination: '' });
+        setNewTrip({ cargo_weight: 0, expected_revenue: 0, origin: '', destination: '' });
     };
 
     const columns = [
@@ -139,6 +140,13 @@ export function Dispatch() {
                     label="Destination"
                     value={newTrip.destination || ''}
                     onChange={e => setNewTrip({ ...newTrip, destination: e.target.value })}
+                />
+
+                <FormInput
+                    label="Estimated Fuel Cost ($)"
+                    type="number"
+                    value={newTrip.expected_revenue || ''}
+                    onChange={e => setNewTrip({ ...newTrip, expected_revenue: parseInt(e.target.value) })}
                 />
             </Modal>
         </div>

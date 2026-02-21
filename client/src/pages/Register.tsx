@@ -1,42 +1,38 @@
 import { useState } from 'react';
 import { Navigation, Lock, AlertCircle } from 'lucide-react';
 import { FormInput } from '../components/FormInput';
-import { useNavigate } from 'react-router-dom';
-import { useFleetStore } from '../store/fleetStore';
+import { useNavigate, Link } from 'react-router-dom';
 
-export function Login() {
-    const [email, setEmail] = useState('admin@fleetflow.com'); // Autofill the seeded admin
-    const [password, setPassword] = useState('password123');
+export function Register() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [role, setRole] = useState('MANAGER');
     const [errorMsg, setErrorMsg] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
     const navigate = useNavigate();
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setErrorMsg('');
+        setSuccessMsg('');
 
         try {
-            // 1. Authenticate with real backend
-            const res = await fetch('http://localhost:3000/api/auth/login', {
+            const res = await fetch('http://localhost:3000/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ email, password, role })
             });
 
             const data = await res.json();
 
             if (!res.ok) {
-                throw new Error(data.error || 'Authentication failed');
+                throw new Error(data.error || 'Registration failed');
             }
 
-            // 2. Set token and User Profile in Global Store
-            const store = useFleetStore.getState();
-            store.setAuth(data.token, data.user);
-
-            // 3. Fire the massive concurrent fetch for all core dashboard data
-            await store.initData();
-
-            // 4. Enter App
-            navigate('/dashboard');
+            setSuccessMsg('Account created successfully! Redirecting to login...');
+            setTimeout(() => {
+                navigate('/login');
+            }, 2000);
         } catch (err: any) {
             setErrorMsg(err.message);
         }
@@ -73,9 +69,9 @@ export function Login() {
                     <Navigation size={32} />
                 </div>
 
-                <h2 style={{ marginBottom: '0.5rem' }}>Access FleetFlow</h2>
+                <h2 style={{ marginBottom: '0.5rem' }}>Create Account</h2>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', textAlign: 'center' }}>
-                    Secure fleet & logistics management hub.
+                    Join the FleetFlow Management Network.
                 </p>
 
                 {errorMsg && (
@@ -85,11 +81,17 @@ export function Login() {
                     </div>
                 )}
 
-                <form onSubmit={handleLogin} style={{ width: '100%' }}>
+                {successMsg && (
+                    <div style={{ width: '100%', background: 'var(--success-bg)', color: 'var(--success)', padding: '0.75rem', borderRadius: '8px', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem' }}>
+                        {successMsg}
+                    </div>
+                )}
+
+                <form onSubmit={handleRegister} style={{ width: '100%' }}>
                     <FormInput
                         label="Email Address"
                         type="email"
-                        placeholder="admin@fleetflow.com"
+                        placeholder="you@company.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
@@ -105,18 +107,29 @@ export function Login() {
                         required
                     />
 
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.5rem' }}>
-                        <a href="#" style={{ fontSize: '0.875rem', color: 'var(--accent-primary)', textDecoration: 'none' }}>Forgot Password?</a>
+                    <div style={{ marginBottom: '1.5rem' }}>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>System Role</label>
+                        <select
+                            value={role}
+                            onChange={e => setRole(e.target.value)}
+                            style={{ padding: '0.75rem' }}
+                        >
+                            <option value="MANAGER">Fleet Manager</option>
+                            <option value="DISPATCHER">Dispatcher</option>
+                            <option value="SAFETY_OFFICER">Safety Officer</option>
+                            <option value="FINANCE">Finance Analyst</option>
+                        </select>
                     </div>
 
-                    <button type="submit" className="btn-primary" style={{ width: '100%', padding: '0.75rem' }}>
-                        Login to Dashboard
+                    <button type="submit" className="btn-primary" style={{ width: '100%', padding: '0.75rem', marginBottom: '1rem' }}>
+                        Register Account
                     </button>
-                </form>
 
-                <div style={{ marginTop: '2rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                    System Version 1.0.0 (API Integrated)
-                </div>
+                    <div style={{ textAlign: 'center', fontSize: '0.875rem' }}>
+                        <span style={{ color: 'var(--text-secondary)' }}>Already have an account? </span>
+                        <Link to="/login" style={{ color: 'var(--accent-primary)', textDecoration: 'none' }}>Login here</Link>
+                    </div>
+                </form>
             </div>
         </div>
     );
