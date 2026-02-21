@@ -39,25 +39,26 @@ router.post('/dispatch', authenticateToken, requireRole(['MANAGER', 'DISPATCHER'
 
                 // 4. Create Trip and Update Statuses Atomically
                 const tripId = `t-${uuidv4()}`;
-                const stmt = db.prepare(`INSERT INTO trips (id, vehicle_id, driver_id, cargo_weight, expected_revenue, origin, destination, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'DISPATCHED')`);
 
-                stmt.run([tripId, vehicle_id, driver_id, cargo_weight, expected_revenue || 0, origin, destination], function (err) {
-                    if (err) return rollback(res, 'Failed to create trip record');
+                db.run(`INSERT INTO trips (id, vehicle_id, driver_id, cargo_weight, expected_revenue, origin, destination, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'DISPATCHED')`,
+                    [tripId, vehicle_id, driver_id, cargo_weight, expected_revenue || 0, origin, destination],
+                    function (err) {
+                        if (err) return rollback(res, 'Failed to create trip record');
 
-                    db.run('UPDATE vehicles SET status = "ON_TRIP" WHERE id = ?', [vehicle_id], (err) => {
-                        if (err) return rollback(res, 'Failed to update vehicle status');
+                        db.run('UPDATE vehicles SET status = "ON_TRIP" WHERE id = ?', [vehicle_id], (err) => {
+                            if (err) return rollback(res, 'Failed to update vehicle status');
 
-                        db.run('UPDATE drivers SET status = "ON_TRIP" WHERE id = ?', [driver_id], (err) => {
-                            if (err) return rollback(res, 'Failed to update driver status');
+                            db.run('UPDATE drivers SET status = "ON_TRIP" WHERE id = ?', [driver_id], (err) => {
+                                if (err) return rollback(res, 'Failed to update driver status');
 
-                            db.run('COMMIT', (err) => {
-                                if (err) return rollback(res, 'Transaction commit failed');
-                                res.status(201).json({ message: 'Trip dispatched successfully', tripId });
+                                db.run('COMMIT', (err) => {
+                                    if (err) return rollback(res, 'Transaction commit failed');
+                                    res.status(201).json({ message: 'Trip dispatched successfully', tripId });
+                                });
                             });
                         });
-                    });
-                });
-                stmt.finalize();
+                    }
+                );
             });
         });
     });

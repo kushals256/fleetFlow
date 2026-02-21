@@ -1,5 +1,5 @@
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Truck, Users, Settings, LogOut, Navigation, Send, Activity, PieChart } from 'lucide-react';
+import { LayoutDashboard, Truck, Users, Settings as SettingsIcon, LogOut, Navigation, Send, Activity, PieChart } from 'lucide-react';
 import './Layout.css';
 
 // We import the pages
@@ -9,6 +9,7 @@ import { Dispatch } from '../pages/Dispatch';
 import { Logs } from '../pages/Logs';
 import { Analytics } from '../pages/Analytics';
 import { Drivers } from '../pages/Drivers';
+import { Settings } from '../pages/Settings';
 
 export function Layout() {
     const location = useLocation();
@@ -48,10 +49,10 @@ export function Layout() {
                         <Users size={20} />
                         <span>Drivers</span>
                     </Link>
-                    <a href="#" className="nav-item">
-                        <Settings size={20} />
+                    <Link to="/settings" className={`nav-item ${location.pathname === '/settings' ? 'active' : ''}`}>
+                        <SettingsIcon size={20} />
                         <span>Settings</span>
-                    </a>
+                    </Link>
                 </nav>
 
                 <div className="sidebar-footer">
@@ -79,6 +80,7 @@ export function Layout() {
                         <Route path="/logs" element={<Logs />} />
                         <Route path="/analytics" element={<Analytics />} />
                         <Route path="/drivers" element={<Drivers />} />
+                        <Route path="/settings" element={<Settings />} />
                         {/* Future placeholders */}
                         <Route path="*" element={<h2>🚧 Under Construction</h2>} />
                     </Routes>

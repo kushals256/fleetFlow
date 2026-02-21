@@ -67,7 +67,7 @@ export function Analytics() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
                             <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', fontWeight: 600, textTransform: 'uppercase' }}>Total Revenue</p>
-                            <h3 style={{ fontSize: '2rem', margin: '0.5rem 0' }}>${totalRevenue.toLocaleString()}</h3>
+                            <h3 style={{ fontSize: '2rem', margin: '0.5rem 0' }}>₹{totalRevenue.toLocaleString()}</h3>
                         </div>
                         <div style={{ padding: '0.75rem', background: 'var(--success-bg)', borderRadius: '12px', color: 'var(--success)' }}>
                             <DollarSign size={24} />
@@ -79,9 +79,9 @@ export function Analytics() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
                             <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', fontWeight: 600, textTransform: 'uppercase' }}>Operating Costs</p>
-                            <h3 style={{ fontSize: '2rem', margin: '0.5rem 0', color: 'var(--danger)' }}>${(totalMaintenanceCost + totalFuelCost).toLocaleString()}</h3>
+                            <h3 style={{ fontSize: '2rem', margin: '0.5rem 0', color: 'var(--danger)' }}>₹{(totalMaintenanceCost + totalFuelCost).toLocaleString()}</h3>
                             <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: 0 }}>
-                                Maint: ${totalMaintenanceCost.toLocaleString()} | Fuel: ${totalFuelCost.toLocaleString()}
+                                Maint: ₹{totalMaintenanceCost.toLocaleString()} | Fuel: ₹{totalFuelCost.toLocaleString()}
                             </p>
                         </div>
                         <div style={{ padding: '0.75rem', background: 'var(--danger-bg)', borderRadius: '12px', color: 'var(--danger)' }}>
@@ -93,7 +93,7 @@ export function Analytics() {
             </div>
 
             {/* Charts Section */}
-            <div className="glass-panel" style={{ height: '400px' }}>
+            <div className="glass-panel" style={{ height: '400px', marginBottom: '2rem' }}>
                 <h3 style={{ marginBottom: '1.5rem' }}>Vehicle ROI (%)</h3>
                 <ResponsiveContainer width="100%" height="80%">
                     <BarChart data={roiData}>
@@ -107,6 +107,33 @@ export function Analytics() {
                         <Bar dataKey="roi" fill="var(--accent-primary)" radius={[4, 4, 0, 0]} />
                     </BarChart>
                 </ResponsiveContainer>
+            </div>
+
+            {/* Financial Summary Table */}
+            <div className="glass-panel">
+                <h3 style={{ marginBottom: '1.5rem', textAlign: 'center', color: 'var(--accent-primary)' }}>Financial Summary of Month</h3>
+                <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                        <thead>
+                            <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', color: 'var(--danger)' }}>
+                                <th style={{ padding: '1rem' }}>Month</th>
+                                <th style={{ padding: '1rem' }}>Revenue</th>
+                                <th style={{ padding: '1rem' }}>Fuel Cost</th>
+                                <th style={{ padding: '1rem' }}>Maintenance</th>
+                                <th style={{ padding: '1rem' }}>Net Profit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                <td style={{ padding: '1rem' }}>Jan</td>
+                                <td style={{ padding: '1rem' }}>Rs. {totalRevenue.toLocaleString()}</td>
+                                <td style={{ padding: '1rem' }}>Rs. {totalFuelCost.toLocaleString()}</td>
+                                <td style={{ padding: '1rem' }}>Rs. {totalMaintenanceCost.toLocaleString()}</td>
+                                <td style={{ padding: '1rem' }}>Rs. {(totalRevenue - (totalFuelCost + totalMaintenanceCost)).toLocaleString()}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </div>

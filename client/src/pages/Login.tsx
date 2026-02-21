@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Navigation, Lock, AlertCircle } from 'lucide-react';
 import { FormInput } from '../components/FormInput';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useFleetStore } from '../store/fleetStore';
 
 export function Login() {
@@ -112,6 +112,11 @@ export function Login() {
                     <button type="submit" className="btn-primary" style={{ width: '100%', padding: '0.75rem' }}>
                         Login to Dashboard
                     </button>
+
+                    <div style={{ textAlign: 'center', fontSize: '0.875rem', marginTop: '1.5rem' }}>
+                        <span style={{ color: 'var(--text-secondary)' }}>Don't have an account? </span>
+                        <Link to="/register" style={{ color: 'var(--accent-primary)', textDecoration: 'none' }}>Register here</Link>
+                    </div>
                 </form>
 
                 <div style={{ marginTop: '2rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>

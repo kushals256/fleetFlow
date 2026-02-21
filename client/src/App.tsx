@@ -2,12 +2,15 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
+import { ToastContainer } from './components/Toast';
 
 
 
 function App() {
   return (
     <BrowserRouter>
+      {/* Global Toast Notifications */}
+      <ToastContainer />
       {/* 
         For Dev 2 mocks: Route splitting 
         - '/' goes to Login page (outside the Sidebar layout)

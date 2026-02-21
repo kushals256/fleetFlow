@@ -17,7 +17,7 @@ export function Logs() {
         { key: 'date_logged', header: 'Date', render: (l: Log) => new Date(l.date_logged).toLocaleDateString() },
         { key: 'vehicle_id', header: 'Vehicle', render: (l: Log) => vehicles.find(v => v.id === l.vehicle_id)?.model || l.vehicle_id },
         { key: 'log_type', header: 'Type', render: (l: Log) => <StatusPill status={l.log_type === 'FUEL' ? 'COMPLETED' : 'IN_SHOP'} /> },
-        { key: 'cost', header: 'Cost ($)', render: (l: Log) => `$${l.cost.toFixed(2)}` },
+        { key: 'cost', header: 'Cost (₹)', render: (l: Log) => `₹${l.cost.toFixed(2)}` },
         { key: 'liters', header: 'Liters', render: (l: Log) => l.liters ? `${l.liters} L` : '-' },
         { key: 'description', header: 'Notes' },
     ];
@@ -90,7 +90,7 @@ export function Logs() {
                 </div>
 
                 <FormInput
-                    label="Total Cost ($)"
+                    label="Total Cost (₹)"
                     type="number"
                     value={newLog.cost || ''}
                     onChange={e => setNewLog({ ...newLog, cost: Number(e.target.value) })}

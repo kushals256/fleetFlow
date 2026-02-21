@@ -85,10 +85,17 @@ export function Vehicles() {
                     onChange={e => setNewVehicle({ ...newVehicle, license_plate: e.target.value })}
                 />
                 <FormInput
-                    label="Capacity (kg)"
+                    label="Max Payload / Capacity (kg)"
                     type="number"
                     value={newVehicle.capacity_kg || ''}
                     onChange={e => setNewVehicle({ ...newVehicle, capacity_kg: parseInt(e.target.value) })}
+                />
+
+                <FormInput
+                    label="Initial Odometer"
+                    type="number"
+                    value={newVehicle.odometer_km === 0 ? '' : newVehicle.odometer_km}
+                    onChange={e => setNewVehicle({ ...newVehicle, odometer_km: parseInt(e.target.value) || 0 })}
                 />
 
                 <div style={{ marginBottom: '1rem' }}>

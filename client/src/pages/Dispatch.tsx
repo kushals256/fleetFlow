@@ -4,10 +4,10 @@ import { DataTable } from '../components/DataTable';
 import { StatusPill } from '../components/StatusPill';
 import { FormInput } from '../components/FormInput';
 import { Modal } from '../components/Modal';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Wand2 } from 'lucide-react';
 
 export function Dispatch() {
-    const { vehicles, drivers, trips, dispatchTrip } = useFleetStore();
+    const { vehicles, drivers, trips, dispatchTrip, addToast } = useFleetStore();
     const [isModalOpen, setModalOpen] = useState(false);
     const [errorText, setErrorText] = useState('');
 
@@ -24,6 +24,44 @@ export function Dispatch() {
     const availableDrivers = drivers.filter(d =>
         d.status === 'ON_DUTY' || d.status === 'AVAILABLE'
     );
+
+    const handleSmartMatch = () => {
+        if (!newTrip.cargo_weight || newTrip.cargo_weight <= 0) {
+            setErrorText('Please enter Cargo Weight first for Smart Match.');
+            return;
+        }
+
+        // 1. Find smallest capable vehicle (to save fuel/space)
+        const capableVehicles = availableVehicles
+            .filter(v => v.capacity_kg >= (newTrip.cargo_weight || 0))
+            .sort((a, b) => a.capacity_kg - b.capacity_kg);
+
+        if (capableVehicles.length === 0) {
+            setErrorText('No available vehicles can handle this cargo weight.');
+            return;
+        }
+        const bestVehicle = capableVehicles[0];
+
+        // 2. Find safest driver with matching license
+        const capableDrivers = availableDrivers
+            .filter(d => d.license_category === bestVehicle.type)
+            .sort((a, b) => b.safety_score - a.safety_score); // Highest score first
+
+        if (capableDrivers.length === 0) {
+            setErrorText(`No available drivers with a ${bestVehicle.type} license found.`);
+            return;
+        }
+        const bestDriver = capableDrivers[0];
+
+        setNewTrip({
+            ...newTrip,
+            vehicle_id: bestVehicle.id,
+            driver_id: bestDriver.id
+        });
+
+        setErrorText('');
+        addToast(`Smart Match Found: ${bestVehicle.model} + ${bestDriver.name} (Safety: ${bestDriver.safety_score})`, 'info');
+    };
 
     const handleDispatch = () => {
         setErrorText('');
@@ -97,6 +135,35 @@ export function Dispatch() {
                     </div>
                 )}
 
+                <FormInput
+                    label="Cargo Weight (kg)"
+                    type="number"
+                    value={newTrip.cargo_weight || ''}
+                    onChange={e => setNewTrip({ ...newTrip, cargo_weight: parseInt(e.target.value) })}
+                />
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+                    <button
+                        type="button"
+                        onClick={handleSmartMatch}
+                        style={{
+                            background: 'var(--accent-secondary)',
+                            color: 'white',
+                            border: 'none',
+                            padding: '0.4rem 0.8rem',
+                            borderRadius: '20px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.4rem',
+                            fontSize: '0.8rem',
+                            cursor: 'pointer',
+                            boxShadow: '0 0 10px rgba(14, 165, 233, 0.4)'
+                        }}
+                    >
+                        <Wand2 size={14} /> Smart Match Assets
+                    </button>
+                </div>
+
                 <div style={{ marginBottom: '1rem' }}>
                     <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Select Vehicle</label>
                     <select
@@ -124,13 +191,6 @@ export function Dispatch() {
                 </div>
 
                 <FormInput
-                    label="Cargo Weight (kg)"
-                    type="number"
-                    value={newTrip.cargo_weight || ''}
-                    onChange={e => setNewTrip({ ...newTrip, cargo_weight: parseInt(e.target.value) })}
-                />
-
-                <FormInput
                     label="Origin"
                     value={newTrip.origin || ''}
                     onChange={e => setNewTrip({ ...newTrip, origin: e.target.value })}
@@ -143,7 +203,7 @@ export function Dispatch() {
                 />
 
                 <FormInput
-                    label="Estimated Fuel Cost ($)"
+                    label="Estimated Fuel Cost (₹)"
                     type="number"
                     value={newTrip.expected_revenue || ''}
                     onChange={e => setNewTrip({ ...newTrip, expected_revenue: parseInt(e.target.value) })}
