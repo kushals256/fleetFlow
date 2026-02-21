@@ -104,7 +104,7 @@ export const useFleetStore = create<FleetState>((set, get) => {
             const errorMsg = errData.error || `API Error: ${response.status}`;
             addToast(errorMsg, 'error');
 
-            if (response.status === 401 || response.status === 403) {
+            if (response.status === 401) {
                 get().setAuth(null, null);
                 window.location.href = '/login';
             }
